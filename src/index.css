@@ -1,0 +1,214 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   ResusCode design tokens.
+   Night-mode base (#06080e) with high-visibility acuity colors:
+   Code Red #ef4444 · Warning Amber #f59e0b · Pulse Cyan #06b6d4 · ROSC Emerald #10b981.
+   Monospace is a system stack — nothing loads from the network (offline-safe).
+--------------------------------------------------------------------------- */
+@theme {
+  --color-bg: #050811;
+  --color-panel: #0a1120;
+  --color-panel2: #101a2e;
+  --color-panel3: #16243f;
+  --color-line: #1e2e4a;
+  --color-line-bright: #2d4268;
+  --color-ink: #f0f4fd;
+  --color-mute: #8d9fb8;
+
+  --color-crit: #ef4444;
+  --color-critdeep: #7f1d1d;
+  --color-warn: #f59e0b;
+  --color-cyber: #06b6d4;
+  --color-good: #10b981;
+  /* Pediatric — reserved exclusively for the pediatric header badge and idle toggle (phase 4a). */
+  --color-peds: #8b5cf6;
+
+  --font-mono:
+    ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16, 32, 64, 0.55), transparent 70%);
+    background-attachment: fixed;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+
+  /* Gloved-hand ergonomics: nothing is accidentally selectable while tapping fast. */
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .selectable,
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  button {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  .surface-card {
+    background: linear-gradient(180deg, rgba(16, 26, 46, 0.78) 0%, rgba(10, 17, 32, 0.88) 100%);
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.06) inset, 0 6px 16px 0 rgba(0, 0, 0, 0.38);
+  }
+
+  .surface-elevated {
+    background: linear-gradient(180deg, rgba(22, 36, 63, 0.82) 0%, rgba(14, 23, 42, 0.92) 100%);
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 8px 20px 0 rgba(0, 0, 0, 0.45);
+  }
+
+  .glow-cyan {
+    filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.25));
+  }
+
+  .glow-red {
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.28));
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Reserve space for the fixed bottom tab bar so the last content — including the
+     clinical disclaimer — is never hidden behind it. This replaces the previous
+     `safe-bottom` + `pb-28` combination, which collided on the same element and
+     resolved to 0px (the hand-written utility won the cascade). */
+  .pb-appbar {
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .touch-hit {
+    touch-action: manipulation;
+  }
+}
+
+/* --- Acuity animations ---------------------------------------------------- */
+
+/* Cycle clock < 10 s: flashing red is a safety signal and is intentionally
+   not removed under prefers-reduced-motion, only softened in rate. */
+@keyframes rc-flash {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.18;
+  }
+}
+.animate-flash {
+  animation: rc-flash 0.6s steps(1, end) infinite;
+}
+
+@keyframes rc-flash-bg {
+  0%,
+  49% {
+    background-color: var(--color-crit);
+  }
+  50%,
+  100% {
+    background-color: var(--color-critdeep);
+  }
+}
+.animate-flash-bg {
+  animation: rc-flash-bg 0.6s steps(1, end) infinite;
+}
+
+@keyframes rc-beat {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  12% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+}
+.animate-beat {
+  animation: rc-beat 0.545s ease-out infinite;
+}
+
+@keyframes rc-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 22px rgba(239, 68, 68, 0);
+  }
+}
+.animate-ping-crit {
+  animation: rc-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Metronome LED: hard on at the beat, decays to dark before the next one. */
+@keyframes rc-led {
+  0% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+}
+.animate-led {
+  animation: rc-led 0.545s ease-out 1 forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-beat,
+  .animate-ping-crit {
+    animation: none;
+  }
+  .animate-flash,
+  .animate-flash-bg {
+    animation-duration: 1.2s;
+  }
+}

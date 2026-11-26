@@ -1,0 +1,22 @@
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+.DS_Store
+.vite
+.playwright-cli
+
+# local tooling, not part of the app
+.agents/
+.archon/
+.claude/
+.omc/
+
+# Android build outputs & local OTA archive
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+ota-bundle.zip

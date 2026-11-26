@@ -1,0 +1,84 @@
+name: Deploy to GitHub Pages & Publish OTA Bundle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow the workflow to publish to Pages via OIDC.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; always let the newest push win.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Deploy is gated on the engine tests and a clean typecheck — a broken
+      # resuscitation logger must never reach the operating room.
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      # 1. Build root-path bundle for Android Capacitor OTA updates and package as ota-bundle.zip.
+      - name: Build Android OTA bundle
+        env:
+          VITE_BASE: /
+          VITE_UPDATE_REPO: ${{ github.repository }}
+          VITE_UPDATE_BRANCH: main
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          npm run build
+          (cd dist && zip -r ../ota-bundle.zip .)
+
+      # 2. Build GitHub Pages site and include ota-bundle.zip alongside version.json.
+      - name: Build GitHub Pages site
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_UPDATE_REPO: ${{ github.repository }}
+          VITE_UPDATE_BRANCH: main
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          npm run build
+          cp ota-bundle.zip dist/ota-bundle.zip
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,45 @@
+{
+  "name": "resuscode",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "description": "ResusCode - Universal Adult ACLS Code Blue Command Engine. PHI-free offline-first PWA (optional anonymous statistics upload when your unit enrolls the device) for Code Blue, ED, ICU and rapid response resuscitation leaders.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "icons": "node scripts/gen-icons.mjs",
+    "android:icons": "node scripts/gen-android-icons.mjs",
+    "android:sync": "vite build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "build:apps-script": "node scripts/build-apps-script.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.6.3",
+    "@capacitor/core": "^8.6.3",
+    "@capacitor/status-bar": "^8.0.4",
+    "lucide-react": "^1.55.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.29.9",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.3"
+  }
+}
