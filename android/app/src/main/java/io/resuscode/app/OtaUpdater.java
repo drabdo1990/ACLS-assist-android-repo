@@ -132,7 +132,7 @@ public final class OtaUpdater {
             throw new IOException("Too many redirects");
         }
         validateUrl(urlStr);
-        URL url = new URL(urlStr);
+        URL url = URI.create(urlStr.trim()).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setInstanceFollowRedirects(false);
         conn.setConnectTimeout(CONNECT_TIMEOUT_MS);

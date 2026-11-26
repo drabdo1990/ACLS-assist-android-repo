@@ -19,6 +19,7 @@ public class MainActivity extends BridgeActivity {
     private final ExecutorService otaExecutor = Executors.newSingleThreadExecutor();
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

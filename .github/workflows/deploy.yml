@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -49,7 +49,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: |
           npm run build
-          (cd dist && zip -r ../ota-bundle.zip .)
+          python3 -c "import shutil; shutil.make_archive('ota-bundle', 'zip', 'dist')"
 
       # 2. Build GitHub Pages site and include ota-bundle.zip alongside version.json.
       - name: Build GitHub Pages site
@@ -63,12 +63,12 @@ jobs:
           cp ota-bundle.zip dist/ota-bundle.zip
 
       - name: Configure Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
         with:
           enablement: true
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -81,4 +81,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

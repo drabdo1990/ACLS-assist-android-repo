@@ -1,9 +1,9 @@
 {
   "version": "0.2.0",
-  "commit": "local",
-  "shortCommit": "local",
-  "commitMessage": "",
-  "builtAt": "2026-11-26T18:27:12.825Z",
+  "commit": "c0b30e88d40617956e57c1d9fa082fa1eebf1bd8",
+  "shortCommit": "c0b30e8",
+  "commitMessage": "Initial commit: ResusCode Android app (English-only) with online OTA updates",
+  "builtAt": "2026-11-26T18:36:44.829Z",
   "repo": "drabdo1990/ACLS-assist",
   "branch": "main",
   "bundleUrl": "https://drabdo1990.github.io/ACLS-assist/ota-bundle.zip"
