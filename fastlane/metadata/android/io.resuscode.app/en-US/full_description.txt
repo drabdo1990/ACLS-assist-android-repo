@@ -1,0 +1,11 @@
+ResusCode is a real-time cognitive command HUD and timekeeper for adult cardiac arrest, built for Code Blue teams, Emergency Departments, ICUs and rapid-response resuscitation leaders.
+
+Features:
+- Master arrest timer with 2-minute CPR cycle engine, metronome, chimes and cycle-expiry alerts
+- One-tap intervention logging: shocks, epinephrine, antiarrhythmics, airway, rhythms, reversible causes
+- Post-ROSC care checklist and structured SBAR handoff export
+- Works fully offline; the screen stays awake during a code; no account needed
+
+Privacy: PHI-free by design. No patient identifiers, no third-party analytics. Data stays on the device unless your unit's admin explicitly enrolls it for the optional, anonymous statistics upload (off by default).
+
+Clinical safety notice: ResusCode is a decision-support and documentation aid that follows AHA / ERC adult ACLS. It is not a substitute for clinical judgement. Verify every dose against your local protocol.

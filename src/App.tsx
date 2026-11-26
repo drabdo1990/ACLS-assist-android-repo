@@ -15,7 +15,7 @@ import { EnrollConfirm } from './components/EnrollConfirm';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SettingsSheet } from './components/SettingsSheet';
 import type { EnrollFragment } from './engine/enrollLink';
-import { checkForUpdates, type UpdateCheckResult } from './engine/updater';
+import { checkForUpdates, FDROID_BUILD, type UpdateCheckResult } from './engine/updater';
 import { useT } from './i18n/useT';
 
 type Tab = 'hud' | 'causes' | 'log';
@@ -84,7 +84,7 @@ export default function App({ pendingEnroll }: { pendingEnroll: EnrollFragment }
 
   // Silent background update check on launch when online and idle (never interrupts a code).
   useEffect(() => {
-    if (!online || status !== 'idle') return;
+    if (FDROID_BUILD || !online || status !== 'idle') return;
     let cancelled = false;
     void checkForUpdates({ online: true }).then((res) => {
       if (!cancelled && res.status === 'update_available') setUpdateCheck(res);

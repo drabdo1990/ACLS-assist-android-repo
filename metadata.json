@@ -1,8 +1,0 @@
-{
-  "name": "ResusCode — Adult ACLS Code Blue Command",
-  "description": "Universal adult ACLS Code Blue command HUD: CPR cycle timer, interventions, H’s & T’s, post-ROSC and SBAR export. PHI-free and offline-first.",
-  "permissions": [],
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

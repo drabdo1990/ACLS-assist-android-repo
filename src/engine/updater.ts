@@ -6,6 +6,12 @@
  */
 import { getNativeBridge, isNativeAndroid } from './android';
 
+/**
+ * True in F-Droid builds: self-update (update checks and OTA bundle downloads) is fully
+ * disabled to comply with F-Droid policy (apps must not download executable code).
+ */
+export const FDROID_BUILD: boolean = typeof __FDROID_BUILD__ !== 'undefined' && __FDROID_BUILD__;
+
 export interface InstalledBuildInfo {
   version: string;
   commit: string;
@@ -173,6 +179,7 @@ function sameCommit(a: string, b: string): boolean {
  * detected immediately.
  */
 export async function checkForUpdates(opts: CheckUpdateOptions = {}): Promise<UpdateCheckResult> {
+  if (FDROID_BUILD) return { status: 'offline' };
   const online = opts.online ?? (typeof navigator === 'undefined' ? true : navigator.onLine);
   if (!online) return { status: 'offline' };
 
@@ -241,6 +248,7 @@ export async function checkForUpdates(opts: CheckUpdateOptions = {}): Promise<Up
 export async function applyOnlineUpdate(
   update: Extract<UpdateCheckResult, { status: 'update_available' }>,
 ): Promise<ApplyUpdateResult> {
+  if (FDROID_BUILD) return { ok: false, reason: 'Self-update is disabled in this build.' };
   const native = getNativeBridge();
   if (native && typeof window !== 'undefined') {
     return new Promise<ApplyUpdateResult>((resolve) => {

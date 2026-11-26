@@ -17,6 +17,7 @@ declare global {
   const __UPDATE_REPO__: string;
   const __UPDATE_BRANCH__: string;
   const __UPDATE_MANIFEST_URL__: string;
+  const __FDROID_BUILD__: boolean;
 
   interface Window {
     ResusCodeNative?: ResusCodeNativeBridge;

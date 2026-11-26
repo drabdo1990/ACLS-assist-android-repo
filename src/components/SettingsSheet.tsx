@@ -11,6 +11,7 @@ import {
   getInstalledBuildInfo,
   resetToBuiltInVersion,
   type UpdateCheckResult,
+  FDROID_BUILD,
 } from '../engine/updater';
 import { useOutboxState, usePrefsState, useServiceVersion } from '../hooks/useService';
 import type { MessageKey } from '../i18n/en';
@@ -140,6 +141,7 @@ export function SettingsSheet({
       </div>
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-3 pt-3 pb-appbar">
+        {FDROID_BUILD ? null : (
         <Panel
           title={t('settings.update.title')}
           icon={CloudDownload}
@@ -244,6 +246,7 @@ export function SettingsSheet({
             </div>
           ) : null}
         </Panel>
+        )}
 
         <Panel title={t('settings.upload.title')} accent={enrolled ? 'cyber' : 'none'}>
           {enrolled ? (

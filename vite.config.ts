@@ -28,11 +28,13 @@ const buildCommit = (process.env.GITHUB_SHA ?? '').trim() || readGit('git rev-pa
 const buildCommitMessage =
   (process.env.GITHUB_COMMIT_MESSAGE ?? '').trim() || readGit('git log -1 --pretty=%s', '');
 const buildTime = new Date().toISOString();
+// F-Droid builds ship without self-update (F-Droid policy: no runtime code downloads).
+const isFdroid = process.env.VITE_FDROID === 'true';
 const updateRepo = (process.env.VITE_UPDATE_REPO ?? 'drabdo1990/ACLS-assist').trim();
 const updateBranch = (process.env.VITE_UPDATE_BRANCH ?? 'main').trim();
 const pagesOrigin = `https://${updateRepo.split('/')[0]}.github.io/${updateRepo.split('/')[1] ?? 'ACLS-assist'}`;
-const updateManifestUrl = (process.env.VITE_UPDATE_MANIFEST_URL ?? `${pagesOrigin}/version.json`).trim();
-const updateBundleUrl = (process.env.VITE_UPDATE_BUNDLE_URL ?? `${pagesOrigin}/ota-bundle.zip`).trim();
+const updateManifestUrl = isFdroid ? '' : (process.env.VITE_UPDATE_MANIFEST_URL ?? `${pagesOrigin}/version.json`).trim();
+const updateBundleUrl = isFdroid ? '' : (process.env.VITE_UPDATE_BUNDLE_URL ?? `${pagesOrigin}/ota-bundle.zip`).trim();
 
 /** Emits version.json into dist/ so both PWA and Android OTA clients can detect new commits. */
 function emitVersionManifest(): Plugin {
@@ -72,6 +74,7 @@ export default defineConfig({
     __UPDATE_REPO__: JSON.stringify(updateRepo),
     __UPDATE_BRANCH__: JSON.stringify(updateBranch),
     __UPDATE_MANIFEST_URL__: JSON.stringify(updateManifestUrl),
+    __FDROID_BUILD__: JSON.stringify(isFdroid),
   },
   plugins: [
     react(),

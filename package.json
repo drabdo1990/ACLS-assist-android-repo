@@ -1,12 +1,13 @@
 {
   "name": "resuscode",
   "private": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "ResusCode - Universal Adult ACLS Code Blue Command Engine. PHI-free offline-first PWA (optional anonymous statistics upload when your unit enrolls the device) for Code Blue, ED, ICU and rapid response resuscitation leaders.",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "build": "vite build",
+    "build:fdroid": "VITE_FDROID=true vite build",
     "preview": "vite preview --port 4173",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",

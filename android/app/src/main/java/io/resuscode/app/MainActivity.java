@@ -34,9 +34,11 @@ public class MainActivity extends BridgeActivity {
             webView.setBackgroundColor(NIGHT_BG);
             webView.addJavascriptInterface(new ResusCodeNativeBridge(), "ResusCodeNative");
 
-            String savedPath = OtaUpdater.getSavedBasePath(this);
-            if (savedPath != null) {
-                this.bridge.setServerBasePath(savedPath);
+            if (!BuildConfig.FDROID_BUILD) {
+                String savedPath = OtaUpdater.getSavedBasePath(this);
+                if (savedPath != null) {
+                    this.bridge.setServerBasePath(savedPath);
+                }
             }
         }
     }
@@ -72,16 +74,22 @@ public class MainActivity extends BridgeActivity {
 
         @JavascriptInterface
         public String getActiveCommit() {
+            if (BuildConfig.FDROID_BUILD) return "";
             return OtaUpdater.getActiveCommit(MainActivity.this);
         }
 
         @JavascriptInterface
         public boolean hasOtaUpdate() {
+            if (BuildConfig.FDROID_BUILD) return false;
             return OtaUpdater.hasOtaUpdate(MainActivity.this);
         }
 
         @JavascriptInterface
         public void applyOtaUpdate(String bundleUrl, String commit) {
+            if (BuildConfig.FDROID_BUILD) {
+                notifyOtaResult(false, "OTA updates are disabled in this build.");
+                return;
+            }
             otaExecutor.execute(() -> {
                 try {
                     String installedPath = OtaUpdater.downloadAndInstall(MainActivity.this, bundleUrl, commit);
@@ -100,6 +108,7 @@ public class MainActivity extends BridgeActivity {
 
         @JavascriptInterface
         public void resetToBuiltIn() {
+            if (BuildConfig.FDROID_BUILD) return;
             otaExecutor.execute(() -> {
                 OtaUpdater.clearSavedBundle(MainActivity.this);
                 runOnUiThread(() -> {
