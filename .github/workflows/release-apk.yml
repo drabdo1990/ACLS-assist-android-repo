@@ -1,0 +1,81 @@
+name: Release signed APK
+
+# Builds the release APK for an existing tag, signs it with the release key
+# stored in repository secrets, and attaches it to a GitHub Release.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to build and release
+        required: true
+        default: v1.0.2
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install Android SDK 36
+        run: |
+          SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets and sync Capacitor Android
+        env:
+          VITE_BASE: /
+          VITE_UPDATE_REPO: ${{ github.repository }}
+          VITE_UPDATE_BRANCH: main
+        run: npm run android:sync
+
+      - name: Build unsigned release APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Align and sign
+        env:
+          KS_B64: ${{ secrets.RELEASE_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+        run: |
+          BT="${ANDROID_HOME}/build-tools/36.0.0"
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          IN=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          "$BT/zipalign" -f -p 4 "$IN" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign --ks "$RUNNER_TEMP/release.jks" --ks-key-alias resuscode \
+            --ks-pass env:KS_PASS --key-pass env:KS_PASS \
+            --out "ResusCode-${{ inputs.tag }}.apk" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" verify --print-certs "ResusCode-${{ inputs.tag }}.apk"
+          rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ inputs.tag }}" "ResusCode-${{ inputs.tag }}.apk" \
+            --repo "${{ github.repository }}" --verify-tag \
+            --title "ResusCode ${{ inputs.tag }}" \
+            --notes "Signed release APK. Install with Obtainium or sideload."
