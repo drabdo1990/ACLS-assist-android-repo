@@ -10,8 +10,8 @@ android {
         applicationId "io.resuscode.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         // Set via -PFDROID_BUILD or an FDROID_BUILD=true line in gradle.properties (F-Droid build).
         buildConfigField "boolean", "FDROID_BUILD", "${project.hasProperty('FDROID_BUILD')}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
